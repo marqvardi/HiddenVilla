@@ -1,0 +1,17 @@
+﻿<div>
+    <h4 class="text-primary pt-3">Another child component</h4>
+    <input id="roonName" @attributes="InputAttributes" />
+</div>
+
+@code {
+    //[Parameter]
+    //public string Placeholder { get; set; }
+
+    [Parameter]
+    public Dictionary<string, object> InputAttributes { get; set; } = new Dictionary<string, object>()
+    {
+        { "required", "required"},
+        { "placeholder", "initial text"},
+        { "maxLength", 10},
+    };
+}

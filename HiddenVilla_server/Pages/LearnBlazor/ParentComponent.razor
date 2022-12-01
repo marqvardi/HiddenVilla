@@ -1,0 +1,44 @@
+﻿@page "/ParentComponent"
+
+<h1 class="text-danger">Parent Child Component</h1>
+
+
+<CascadingValue Value="MessageFromGrandchild" Name="MessageFromGrandParent">
+    <CascadingValue Value="@LuckyNumber" Name="GrandParentLuckyNumber">
+        <ChildComponent OnClickBtnMethod="ShowMessage" Title="Teste Teste">
+            <ChildContent>
+                Render fragment from parent
+            </ChildContent>
+
+            <ChildDangerContent>
+                Render Danger fragment from parent
+            </ChildDangerContent>
+        </ChildComponent>
+
+        <GrandChildComponent />
+    </CascadingValue>
+</CascadingValue>
+
+<AnotherChildComponent InputAttributes="@inputAttibutesFromParent" />
+
+<p><b>@messageText</b></p>
+
+
+@code {
+    private string messageText = "";
+    private string MessageFromGrandchild = "MEssage from grandchild";
+    private string LuckyNumber = "8";
+
+    private void ShowMessage(MouseEventArgs e)
+    {
+        messageText = "Message from parent";
+    }
+
+    public Dictionary<string, object> inputAttibutesFromParent { get; set; } = new Dictionary<string, object>()
+    {
+        { "required", "required"},
+        { "placeholder", "Text from parent"},
+        { "maxLength", 5},
+    };
+
+}

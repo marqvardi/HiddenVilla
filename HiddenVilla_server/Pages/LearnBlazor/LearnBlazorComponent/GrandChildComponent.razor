@@ -1,0 +1,19 @@
+﻿<div class="border mt-2 ">
+    <div class="row">
+
+    <h4 class="text-primary pl-4 pt-2 col-12">Grand child component</h4>
+    </div>
+    <dic class="row">
+
+    <p class="pl-4 ml-2"> there is a message - @MessagefromGrandChild</p>
+    <p class="pl-4 ml-2"> Lucky number - @LuckNumberfromGrandParent</p>
+    </dic>
+</div>
+@code {
+    [CascadingParameter(Name = "MessageFromGrandParent")]
+    public string MessagefromGrandChild { get; set; }
+
+      [CascadingParameter(Name = "GrandParentLuckyNumber")]
+    public string LuckNumberfromGrandParent { get; set; }
+
+}

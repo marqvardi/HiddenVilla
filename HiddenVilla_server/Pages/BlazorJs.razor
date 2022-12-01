@@ -1,0 +1,65 @@
+﻿@page "/blazorjs"
+@inject IJSRuntime js
+
+<h3>Blazor Js</h3>
+
+<div class="row">
+    <button class="btn btn-secondary" @onclick="(() => TestConfirmBox(ConfirmMessage))">
+        Test confirm box
+    </button>
+</div>
+
+<div class="row">
+    <button class="btn btn-success" @onclick="TestSuccess">
+        Test confirm box - Success
+    </button>
+</div>
+
+<div class="row mb-5">
+    <button class="btn btn-danger" @onclick="TestError">
+        Test confirm box - Error
+    </button>
+</div>
+
+
+<div class="row">
+    <button class="btn btn-success" @onclick="TestSuccessSwal">
+        Test confirm box - Sweet alert Success
+    </button>
+</div>
+
+<div class="row mb-5">
+    <button class="btn btn-danger" @onclick="TestErrorSwal">
+        Test confirm box - Sweet alert Error
+    </button>
+</div>
+
+
+@code {
+    private string ConfirmMessage = "Are you sure?";
+
+    private async Task TestConfirmBox(string message)
+    {
+        var result = await js.InvokeAsync<bool>("confirm", ConfirmMessage);
+    }
+
+    private async Task TestSuccess()
+    {
+        await js.ToastrSuccess("success message");
+    }
+
+    private async Task TestError()
+    {
+        await js.ToastrError("deu merda");
+    }
+
+      private async Task TestSuccessSwal()
+    {
+        await js.InvokeVoidAsync("ShowSweetAlert","success", "success message");
+    }
+
+    private async Task TestErrorSwal()
+    {
+         await js.InvokeVoidAsync("ShowSweetAlert","error", "error message, shit");
+    }
+}
