@@ -23,5 +23,8 @@ namespace Models
 
         public string Details { get; set; }
         public string SqFt { get; set; }
+
+        public virtual ICollection<HotelRoomImageDto> HotelRoomImages { get; set; }
+        public List<string> ImageUrls { get; set; }
     }
 }

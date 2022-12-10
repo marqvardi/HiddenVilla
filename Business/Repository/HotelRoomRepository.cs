@@ -3,6 +3,7 @@ using Business.Repository.IRepository;
 using DataLayerAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Models;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Business.Repository
 
         public async Task<HotelRoomDto> CreateHotelRoom(HotelRoomDto hotelRoomDto)
         {
-            var hotelRoom = mapper.Map<HotelRoom>(hotelRoomDto);
+            var hotelRoom = mapper.Map<HotelRoomDto, HotelRoom>(hotelRoomDto);
             hotelRoom.CreatedDate = DateTime.Now;
             hotelRoom.CreatedBy = "";
 
@@ -40,6 +41,9 @@ namespace Business.Repository
 
             if(roomDetails != null)
             {
+                var images = await dbContext.HotelRoomImages.Where(c => c.RoomId == roomId).ToListAsync();
+         
+                dbContext.HotelRoomImages.RemoveRange(images);
                 dbContext.HotelRooms.Remove(roomDetails);
                 return await dbContext.SaveChangesAsync();
             }
@@ -47,14 +51,13 @@ namespace Business.Repository
             {
                 return 0;
             }
-
         }
 
-        public async Task<IEnumerable<HotelRoomDto>> GetAllHotelRoom()
+        public async Task<IEnumerable<HotelRoomDto>> GetAllHotelRooms()
         {
             try
             {
-                return mapper.Map<IEnumerable<HotelRoomDto>>(dbContext.HotelRooms);
+                return mapper.Map<IEnumerable<HotelRoomDto>>(dbContext.HotelRooms.Include(c => c.HotelRoomImages));
             }
             catch (Exception ex)
             {
@@ -66,7 +69,7 @@ namespace Business.Repository
         {
             try
             {
-                var hotelRoomDto = mapper.Map<HotelRoomDto>(await dbContext.HotelRooms.FirstOrDefaultAsync(c => c.Id == roomId));
+                var hotelRoomDto = mapper.Map<HotelRoomDto>(await dbContext.HotelRooms.Include(c => c.HotelRoomImages).FirstOrDefaultAsync(c => c.Id == roomId));
 
                 return hotelRoomDto;
             }
@@ -76,13 +79,22 @@ namespace Business.Repository
             }
         }
 
-        public async Task<HotelRoomDto> IsRoomUnique(string name)
+        public async Task<HotelRoomDto> IsRoomUnique(string name, int roomId = 0)
         {
             try
             {
+                if(roomId == 0)
+                {
                 var hotelRoomDto = mapper.Map<HotelRoomDto>(await dbContext.HotelRooms.FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower()));
 
                 return hotelRoomDto;
+                }
+                else
+                {
+                    var hotelRoomDto = mapper.Map<HotelRoomDto>(await dbContext.HotelRooms.FirstOrDefaultAsync(c => c.Name.ToLower() == name.ToLower() && c.Id != roomId));
+
+                    return hotelRoomDto;
+                }
             }
             catch (Exception ex)
             {
@@ -97,14 +109,14 @@ namespace Business.Repository
                 if (roomId == hotelRoomDto.Id)
                 {
                     var roomDetails = await dbContext.HotelRooms.FindAsync(roomId);
-                    var room = mapper.Map<HotelRoom>(roomDetails);
+                    var room = mapper.Map<HotelRoomDto, HotelRoom>(hotelRoomDto, roomDetails);
                     room.UpdateDate = DateTime.Now;
                     room.UpdatedBy = "";
 
                     var updatedRoom = dbContext.HotelRooms.Update(room);
                     await dbContext.SaveChangesAsync();
 
-                    return mapper.Map<HotelRoomDto>(updatedRoom.Entity);
+                    return mapper.Map<HotelRoom,HotelRoomDto>(updatedRoom.Entity);
                 }
                 else
                 {
